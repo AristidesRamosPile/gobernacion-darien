@@ -439,37 +439,76 @@
 
 <!-- ═══════════════ MODAL EDITAR ═══════════════ -->
 <div class="modal-overlay" id="editModal">
-  <div class="modal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <h3>✏️ Editar Funcionario</h3>
+    <h3>✏️ Ficha Funcional del Funcionario</h3>
     <input type="hidden" id="editNodeId">
+    <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px">👤 Datos Personales</div>
     <div class="form-group">
       <label>Nombre Completo</label>
       <input type="text" id="editNombre" placeholder="Nombre y apellidos completos">
     </div>
-    <div class="form-group">
-      <label>Cédula</label>
-      <input type="text" id="editCedula" placeholder="8-123-4567">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Cédula</label>
+        <input type="text" id="editCedula" placeholder="8-123-4567">
+      </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <select id="editEstado">
+          <option value="Titular">Titular</option>
+          <option value="Encargado">Encargado</option>
+          <option value="Vacante">Vacante</option>
+        </select>
+      </div>
     </div>
     <div class="form-group">
-      <label>Cargo / Posición</label>
-      <input type="text" id="editCargo" placeholder="Cargo oficial">
+      <label>Profesión / Título</label>
+      <input type="text" id="editProfesion" placeholder="Ej: Licenciado en Derecho">
+    </div>
+    <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:14px 0 10px">🏛️ Datos del Cargo</div>
+    <div class="form-group">
+      <label>Cargo / Posición Oficial</label>
+      <input type="text" id="editCargo" placeholder="Cargo oficial según nombramiento">
     </div>
     <div class="form-group">
-      <label>Estado</label>
-      <select id="editEstado">
-        <option value="Titular">Titular</option>
-        <option value="Encargado">Encargado</option>
-        <option value="Vacante">Vacante</option>
-      </select>
+      <label>Función Principal</label>
+      <input type="text" id="editFuncion" placeholder="Ej: Asesoría jurídica al Despacho del Gobernador">
     </div>
     <div class="form-group">
-      <label>Teléfono / Ext.</label>
-      <input type="text" id="editTelefono" placeholder="6xx-xxxx / Ext.">
+      <label>Base Legal del Cargo</label>
+      <input type="text" id="editBaseLegal" placeholder="Ej: Ley 2 de 1987; Ley 38 de 2000">
+    </div>
+    <div class="form-group">
+      <label>Coordina con</label>
+      <input type="text" id="editCoordin" placeholder="Ej: Despacho del Gobernador, Secretaría General">
+    </div>
+    <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:14px 0 10px">📞 Contacto</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Teléfono / Ext.</label>
+        <input type="text" id="editTelefono" placeholder="6xx-xxxx">
+      </div>
+      <div class="form-group">
+        <label>Fecha de Nombramiento</label>
+        <input type="text" id="editFechaNom" placeholder="DD/MM/AAAA">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Correo Institucional</label>
+      <input type="text" id="editCorreoInst" placeholder="nombre@mingob.gob.pa">
+    </div>
+    <div class="form-group">
+      <label>Correo Personal</label>
+      <input type="text" id="editCorreoPers" placeholder="nombre@gmail.com">
+    </div>
+    <div class="form-group">
+      <label>Observaciones</label>
+      <input type="text" id="editObs" placeholder="Notas adicionales">
     </div>
     <div class="modal-actions">
       <button class="btn btn-danger" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveEdit()">💾 Guardar</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Guardar Ficha</button>
     </div>
   </div>
 </div>
@@ -803,6 +842,14 @@ function openEdit(id) {
   document.getElementById('editCargo').value = node.cargo || '';
   document.getElementById('editEstado').value = node.estado || 'Titular';
   document.getElementById('editTelefono').value = node.telefono || '';
+  document.getElementById('editProfesion').value = node.profesion || '';
+  document.getElementById('editFuncion').value = node.funcion || '';
+  document.getElementById('editBaseLegal').value = node.baseLegal || '';
+  document.getElementById('editCoordin').value = node.coordin || '';
+  document.getElementById('editFechaNom').value = node.fechaNom || '';
+  document.getElementById('editCorreoInst').value = node.correoInst || '';
+  document.getElementById('editCorreoPers').value = node.correoPersonal || '';
+  document.getElementById('editObs').value = node.observaciones || '';
   document.getElementById('editModal').classList.add('open');
 }
 
@@ -815,16 +862,24 @@ function saveEdit() {
   if (!currentEditId) return;
   const node = findNode(ORG_DATA, currentEditId);
   if (!node) return;
-  node.persona  = document.getElementById('editNombre').value.trim();
-  node.cedula   = document.getElementById('editCedula').value.trim();
-  node.cargo    = document.getElementById('editCargo').value.trim();
-  node.estado   = document.getElementById('editEstado').value;
-  node.telefono = document.getElementById('editTelefono').value.trim();
+  node.persona       = document.getElementById('editNombre').value.trim();
+  node.cedula        = document.getElementById('editCedula').value.trim();
+  node.cargo         = document.getElementById('editCargo').value.trim();
+  node.estado        = document.getElementById('editEstado').value;
+  node.telefono      = document.getElementById('editTelefono').value.trim();
+  node.profesion     = document.getElementById('editProfesion').value.trim();
+  node.funcion       = document.getElementById('editFuncion').value.trim();
+  node.baseLegal     = document.getElementById('editBaseLegal').value.trim();
+  node.coordin       = document.getElementById('editCoordin').value.trim();
+  node.fechaNom      = document.getElementById('editFechaNom').value.trim();
+  node.correoInst    = document.getElementById('editCorreoInst').value.trim();
+  node.correoPersonal= document.getElementById('editCorreoPers').value.trim();
+  node.observaciones = document.getElementById('editObs').value.trim();
   saveData();
   closeModal();
   renderOrg();
   renderListado();
-  showToast('✅ Funcionario actualizado correctamente');
+  showToast('✅ Ficha funcional guardada correctamente');
 }
 
 // ═══════════════════════════════════════════════
